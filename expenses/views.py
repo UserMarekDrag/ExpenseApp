@@ -6,6 +6,7 @@ from .reports import summary_per_category
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.paginator import Page
+from django.db.models import Sum
 
 
 class ExpenseListView(ListView):
@@ -24,6 +25,8 @@ class ExpenseListView(ListView):
 
         categories = Category.objects.all()
 
+        total_amount = queryset.aggregate(total_amount=Sum('amount'))['total_amount']
+
         paginator = Paginator(queryset, self.paginate_by)
         page = self.request.GET.get('page')
         try:
@@ -39,6 +42,7 @@ class ExpenseListView(ListView):
             summary_per_category=summary_per_category(queryset),
             categories=categories,
             page_obj=page_obj,
+            total_amount=total_amount,
             **kwargs)
         return context
 

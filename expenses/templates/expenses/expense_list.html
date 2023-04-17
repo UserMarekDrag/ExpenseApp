@@ -60,6 +60,13 @@
 		<td colspan="5">no items</td>
 	  </tr>
 	{% endfor %}
+
+	<tr>
+		<td colspan="2"></td>
+		<td colspan="1">Total:</td>
+		<td colspan="3">{{ total_amount|floatformat:2 }}</td>
+	</tr>
+
 	</tbody>
 </table>
 
