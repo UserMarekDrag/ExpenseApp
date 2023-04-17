@@ -10,6 +10,12 @@
   <input type="date" name="from" id="from" value="{{ request.GET.from|default:'' }}">
   <label for="to">To:</label>
   <input type="date" name="to" id="to" value="{{ request.GET.to|default:'' }}">
+  <label for="categories">Categories:</label>
+  <select name="categories" id="categories" multiple>
+	{% for category in categories  %}
+		<option value="{{ category.name }}">{{ category.name }}</option>
+	{% endfor %}
+  </select>
   <button type="submit">search</button>
 </form>
 <br>

@@ -19,11 +19,14 @@ class ExpenseListView(ListView):
             if name:
                 queryset = queryset.filter(name__icontains=name)
 
-        return super().get_context_data(
+        categories = Category.objects.all()
+        context = super().get_context_data(
             form=form,
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
+            categories=categories,
             **kwargs)
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -38,10 +41,14 @@ class ExpenseListView(ListView):
         elif date_to:
             queryset = queryset.filter(date__lte=date_to)
 
+        categories = self.request.GET.getlist('categories')
+
+        if categories:
+            queryset = queryset.filter(category__name__in=categories)
+
         return queryset
 
 
 class CategoryListView(ListView):
     model = Category
     paginate_by = 5
-
