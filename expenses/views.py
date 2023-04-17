@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.paginator import Page
 from django.db.models import Sum
+from django.db.models.functions import TruncMonth, TruncYear
 
 
 class ExpenseListView(ListView):
@@ -36,6 +37,13 @@ class ExpenseListView(ListView):
         except EmptyPage:
             page_obj = paginator.page(paginator.num_pages)
 
+        # QuerySet to calculate total amount per year and month
+        summary_per_year_month = queryset.\
+            annotate(year=TruncYear('date'), month=TruncMonth('date')).\
+            values('year', 'month').\
+            annotate(total_amount=Sum('amount')).\
+            order_by('year', 'month')
+
         context = super().get_context_data(
             form=form,
             object_list=queryset,
@@ -43,6 +51,7 @@ class ExpenseListView(ListView):
             categories=categories,
             page_obj=page_obj,
             total_amount=total_amount,
+            summary_per_year_month=summary_per_year_month,
             **kwargs)
         return context
 
