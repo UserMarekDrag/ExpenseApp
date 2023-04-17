@@ -4,11 +4,14 @@ from .forms import ExpenseSearchForm
 from .models import Expense, Category
 from .reports import summary_per_category
 from django.utils import timezone
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import Page
 
 
 class ExpenseListView(ListView):
     model = Expense
     paginate_by = 5
+    ordering = '-date'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         queryset = object_list if object_list is not None else self.object_list
@@ -20,11 +23,22 @@ class ExpenseListView(ListView):
                 queryset = queryset.filter(name__icontains=name)
 
         categories = Category.objects.all()
+
+        paginator = Paginator(queryset, self.paginate_by)
+        page = self.request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
         context = super().get_context_data(
             form=form,
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
             categories=categories,
+            page_obj=page_obj,
             **kwargs)
         return context
 
@@ -45,6 +59,20 @@ class ExpenseListView(ListView):
 
         if categories:
             queryset = queryset.filter(category__name__in=categories)
+
+        # Get sort parameters from query parameters
+        sort_by = self.request.GET.get('sort_by', 'date')  # Default to sort by date
+        sort_order = self.request.GET.get('sort_order', 'asc')  # Default to ascending order
+
+        # Apply sorting based on sort_by parameter
+        if sort_by == 'category':
+            queryset = queryset.order_by('category__name')
+        elif sort_by == 'date':
+            queryset = queryset.order_by('date')
+
+        # Apply sorting order based on sort_order parameter
+        if sort_order == 'desc':
+            queryset = queryset.reverse()
 
         return queryset
 

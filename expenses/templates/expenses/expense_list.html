@@ -16,6 +16,16 @@
 		<option value="{{ category.name }}">{{ category.name }}</option>
 	{% endfor %}
   </select>
+  <label for="sort_by">Sort by:</label>
+  <select name="sort_by" id="sort_by">
+    <option value="category" {% if request.GET.sort_by == 'category' %}selected{% endif %}>Category</option>
+    <option value="date" {% if request.GET.sort_by == 'date' %}selected{% endif %}>Date</option>
+  </select>
+  <label for="sort_order">Sort order:</label>
+  <select name="sort_order" id="sort_order">
+    <option value="asc" {% if request.GET.sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+    <option value="desc" {% if request.GET.sort_order == 'desc' %}selected{% endif %}>Descending</option>
+  </select>
   <button type="submit">search</button>
 </form>
 <br>
