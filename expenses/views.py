@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.paginator import Page
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth, TruncYear
+from django.db.models import Count
 
 
 class ExpenseListView(ListView):
@@ -93,3 +94,11 @@ class ExpenseListView(ListView):
 class CategoryListView(ListView):
     model = Category
     paginate_by = 5
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Annotate the queryset with the count of related 'expense' objects
+        queryset = queryset.annotate(num_expenses=Count('expense'))
+
+        return queryset

@@ -7,6 +7,7 @@
 	<thead>
 		<tr>
 			<th>name</th>
+			<th>num expenses</th>
 			<th>actions</th>
 		</tr>
 	</thead>
@@ -14,7 +15,10 @@
 		{% for obj in object_list %}
 		<tr>
 			<td>
-				{{obj.name}}
+				{{ obj.name }}
+			</td>
+			<td>
+				{{ obj.num_expenses }}
 			</td>
 			<td>
 				<a href="{% url 'expenses:category-edit' obj.id %}">edit</a>
